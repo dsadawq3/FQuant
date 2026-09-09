@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fquant"
+version = "0.1.0"
+description = "High-Precision Post-Training LLM Quantization Framework"
+readme = "README.md"
+authors = [{ name = "F-Labs Team", email = "contact@flabs.ai" }]
+license = { text = "Apache-2.0" }
+requires-python = ">=3.9"
+dependencies = [
+    "torch>=2.0.0",
+    "safetensors>=0.4.0",
+    "transformers>=4.40.0",
+    "numpy>=1.22.0"
+]
+
+[project.scripts]
+fquant = "fquant.cli:main"
