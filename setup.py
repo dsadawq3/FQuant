@@ -9,8 +9,14 @@ setup(
     install_requires=[
         "torch>=2.0.0",
         "safetensors>=0.4.0",
-        "numpy>=1.22.0"
+        "numpy>=1.22.0",
+        "huggingface_hub>=0.20.0"
     ],
+    entry_points={
+        "console_scripts": [
+            "fquant=fquant.cli:main"
+        ]
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
