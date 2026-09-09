@@ -11,7 +11,7 @@ It eliminates the severe reasoning collapse, activation outlier clipping, and lo
 
 ---
 
-## 📢 Notice on Model Quality, Iterative Reformation & Strategic Roadmap
+## Notice on Model Quality, Iterative Reformation & Strategic Roadmap
 
 > **Ecosystem Distribution & Continuous Evolution Notice**:
 > Architectural parameters, SVD rank allocations, and reconstruction tolerances in FQuant are subject to ongoing research refinement. 
@@ -32,7 +32,7 @@ It eliminates the severe reasoning collapse, activation outlier clipping, and lo
 
 ---
 
-## 📦 Installation
+## Installation
 
 ```bash
 git clone https://github.com/dsadawq3/FQuant.git
@@ -72,7 +72,7 @@ fquant verify --model ./quantized_model
 
 ---
 
-## 💻 Python API
+## Python API
 
 ```python
 import torch
@@ -93,13 +93,13 @@ kv_hook = KVBSSAttentionHook(τ_focus=1.10, haze_floor_margin=12.0)
 
 ---
 
-## 🌟 Quantized Model Releases
+## Quantized Model Releases
 
 - **[F-Labs/Spark-X2.5-4B-Hadamard-GSQ](https://huggingface.co/F-Labs/Spark-X2.5-4B-Hadamard-GSQ)** (4.18 GB, -45.4% RAM saved)
 - **[F-Labs/MiniCPM5-2B-Hadamard-GSQ](https://huggingface.co/F-Labs/MiniCPM5-2B-Hadamard-GSQ)** (2.03 GB, -56.6% RAM saved, 128K context)
 
 ---
 
-## 📄 License
+## License
 
 Apache License 2.0. Engineered at **[F-Labs](https://huggingface.co/F-Labs)**.
