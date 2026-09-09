@@ -14,12 +14,12 @@ It eliminates the severe reasoning collapse, activation outlier clipping, and lo
 ## 🏛️ The 7 Pillars of FQuant
 
 1. **DV-SSQ (Dense-Vectorized Subspace Salience Quantization)**: Multi-tier parameter partitioning isolating salient channels (INT8), background MLP weights (INT4 GSQ), and eigenspace residuals (BF16 SVD).
-2. **KV-BSS (Key-Value Binding Softmax Sharpening)**: Focus temperature scaling ($\tau_{\text{focus}} = 1.10$) and Attention Haze floor suppression ($< \max - 12.0$) to prevent entity and structured key-value hallucinations (`["key"] => "value"`) on contexts up to 128K tokens.
+2. **KV-BSS (Key-Value Binding Softmax Sharpening)**: Focus temperature scaling (τ_focus = 1.10) and Attention Haze floor suppression ($< \max - 12.0$) to prevent entity and structured key-value hallucinations (`["key"] => "value"`) on contexts up to 128K tokens.
 3. **Zero-Compression Shield**: 100% pure BF16 isolation for all RMSNorms, biases, and token embeddings.
-4. **Key-Projection Exponential Sensitivity Defense**: Doubled SVD rank ($r=32$) on `k_proj` to prevent exponential amplification of quantization noise in $\exp(Q K^T / \sqrt{d})$.
+4. **Key-Projection Exponential Sensitivity Defense**: Doubled SVD rank ($r=32$) on `k_proj` to prevent exponential amplification of quantization noise in exp(Q · Kᵀ / √d).
 5. **Spectral Entropy Bifurcation Detection**: Automatic singular-value entropy calculation allocating dynamic rank budgets to deep abstraction reasoning circuits.
 6. **Orthonormal Walsh-Hadamard Spin Rotation**: Coordinate rotation ($W' = W H^T, X' = X H$) eliminating coordinate-aligned activation outliers by over 80%.
-7. **Null-Space Noise Confinement**: Directing residual quantization error into the model's non-semantic null space $\ker(X)$.
+7. **Null-Space Noise Confinement**: Directing residual quantization error into the model's non-semantic null space ker(X).
 
 ---
 
