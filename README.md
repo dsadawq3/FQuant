@@ -1,5 +1,6 @@
 # ⚡ FQuant: High-Precision Post-Training LLM Quantization Framework
 
+[![F-Labs Organization](https://img.shields.io/badge/%F0%9F%A4%97%20Organization-F--Labs-yellow.svg)](https://huggingface.co/F-Labs)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](LICENSE)
 [![GitHub](https://img.shields.io/badge/GitHub-dsadawq3%2FFQuant-black?logo=github)](https://github.com/dsadawq3/FQuant)
 [![Framework](https://img.shields.io/badge/PyTorch-2.0%2B-red.svg)](https://pytorch.org)
@@ -13,7 +14,7 @@ It eliminates the severe reasoning collapse, activation outlier clipping, and lo
 ## 🏛️ The 7 Pillars of FQuant
 
 1. **DV-SSQ (Dense-Vectorized Subspace Salience Quantization)**: Multi-tier parameter partitioning isolating salient channels (INT8), background MLP weights (INT4 GSQ), and eigenspace residuals (BF16 SVD).
-2. **KV-BSS (Key-Value Binding Softmax Sharpening)**: Focus temperature scaling ($	au_{	ext{focus}} = 1.10$) and Attention Haze floor suppression ($< \max - 12.0$) to prevent entity and structured key-value hallucinations (`["key"] => "value"`) on contexts up to 128K tokens.
+2. **KV-BSS (Key-Value Binding Softmax Sharpening)**: Focus temperature scaling ($\tau_{\text{focus}} = 1.10$) and Attention Haze floor suppression ($< \max - 12.0$) to prevent entity and structured key-value hallucinations (`["key"] => "value"`) on contexts up to 128K tokens.
 3. **Zero-Compression Shield**: 100% pure BF16 isolation for all RMSNorms, biases, and token embeddings.
 4. **Key-Projection Exponential Sensitivity Defense**: Doubled SVD rank ($r=32$) on `k_proj` to prevent exponential amplification of quantization noise in $\exp(Q K^T / \sqrt{d})$.
 5. **Spectral Entropy Bifurcation Detection**: Automatic singular-value entropy calculation allocating dynamic rank budgets to deep abstraction reasoning circuits.
