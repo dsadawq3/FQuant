@@ -135,6 +135,19 @@ class FQuantEngine:
                     total_quant_bytes += quant_tensors[name].numel() * 2
                     continue
 
+                # 1b. SELECTIVE ATTENTION PRESERVATION (Spark parity):
+                # quantize_spark.py keeps attention projections in clean BF16.
+                # NOTE (honesty): the DV-SSQ salient-INT8 tier is NOT implemented
+                # in this generic engine, so Spark weights cannot be reproduced
+                # 1:1 here — this path is BF16 pass-through only.
+                if ".self_attn." in name:
+                    logger.warning(
+                        "DV-SSQ salient-INT8 tier not implemented in FQuantEngine; "
+                        f"keeping attention tensor '{name}' in BF16 (pass-through)."
+                    )
+                    quant_tensors[name] = param.to(torch.bfloat16).contiguous()
+                    total_quant_bytes += quant_tensors[name].numel() * 2
+                    continue
                 # 2. Layer rank determination
                 layer_idx = None
                 for part in name.split("."):

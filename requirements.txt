@@ -1,4 +1,6 @@
 torch>=2.0.0
 safetensors>=0.4.0
-transformers>=4.40.0
+transformers>=4.45.0
 numpy>=1.22.0
+scipy>=1.10.0
+huggingface_hub>=0.20.0

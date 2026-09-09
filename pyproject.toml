@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fquant"
-version = "0.1.0"
+version = "1.0.0"
 description = "High-Precision Post-Training LLM Quantization Framework"
 readme = "README.md"
 authors = [{ name = "F-Labs Team", email = "contact@flabs.ai" }]
@@ -13,8 +13,10 @@ requires-python = ">=3.9"
 dependencies = [
     "torch>=2.0.0",
     "safetensors>=0.4.0",
-    "transformers>=4.40.0",
-    "numpy>=1.22.0"
+    "transformers>=4.45.0",
+    "numpy>=1.22.0",
+    "scipy>=1.10.0",
+    "huggingface_hub>=0.20.0"
 ]
 
 [project.scripts]

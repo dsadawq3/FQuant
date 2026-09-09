@@ -9,7 +9,9 @@ setup(
     install_requires=[
         "torch>=2.0.0",
         "safetensors>=0.4.0",
+        "transformers>=4.45.0",
         "numpy>=1.22.0",
+        "scipy>=1.10.0",
         "huggingface_hub>=0.20.0"
     ],
     entry_points={
@@ -22,5 +24,5 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ],
-    python_requires=">=3.8",
+    python_requires=">=3.9",
 )

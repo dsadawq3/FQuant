@@ -14,6 +14,7 @@ class ZeroCompressionShield:
             or "layernorm" in name_lower
             or "bias" in name_lower
             or "embed_tokens" in name_lower
+            or "embedding" in name_lower
             or "lm_head" in name_lower
         )
 

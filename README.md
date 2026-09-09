@@ -88,7 +88,7 @@ engine.quantize_model(
 )
 
 # Apply KV-BSS inference hook for long-context recall
-kv_hook = KVBSSAttentionHook(τ_focus=1.10, haze_floor_margin=12.0)
+kv_hook = KVBSSAttentionHook(tau_focus=1.10, haze_floor_margin=12.0)
 ```
 
 ---
