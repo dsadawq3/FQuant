@@ -7,7 +7,7 @@
 
 **FQuant** is an open-source post-training LLM quantization and attention-sharpening framework engineered at **[F-Labs](https://huggingface.co/F-Labs)**. 
 
-It eliminates the severe reasoning collapse, activation outlier clipping, and long-context hallucinations of naive INT4/INT8 quantization through a cohesive 7-pillar mathematical architecture.
+It addresses the severe reasoning collapse, activation outlier clipping, and long-context hallucinations of naive INT4/INT8 quantization through a cohesive 7-part engineering pipeline combining known quantization techniques.
 
 ---
 
@@ -97,6 +97,17 @@ kv_hook = KVBSSAttentionHook(tau_focus=1.10, haze_floor_margin=12.0)
 
 - **[F-Labs/Spark-X2.5-4B-Hadamard-GSQ](https://huggingface.co/F-Labs/Spark-X2.5-4B-Hadamard-GSQ)** (4.18 GB, -45.4% RAM saved)
 - **[F-Labs/MiniCPM5-2B-Hadamard-GSQ](https://huggingface.co/F-Labs/MiniCPM5-2B-Hadamard-GSQ)** (2.03 GB, -56.6% RAM saved, 128K context)
+
+---
+## Related Work & Attribution
+
+FQuant builds on established quantization literature; our contribution is the composition into an edge-focused pipeline plus per-model artifacts and edge measurements.
+
+- [QuaRot](https://arxiv.org/abs/2404.00456) — Hadamard rotation for quantization; we use the same principle with fixed H128/H256 Walsh-Hadamard blocks + GSQ, without claiming the rotation itself.
+- [SpinQuant](https://arxiv.org/abs/2405.16406) — learned rotations; we use fixed Walsh-Hadamard blocks with no training, trading adaptivity for edge simplicity.
+- [GPTQ](https://arxiv.org/abs/2210.17323) / [AWQ](https://arxiv.org/abs/2306.00978) — group quantization and salient channels; our GSQ (g=64) and INT8 tier follow in the spirit of that work.
+- [ZeroQuant-V2](https://arxiv.org/abs/2307.09782) / [LoRC](https://arxiv.org/abs/2312.09934) — low-rank compensation of quantization error; our RCO is the same class of idea applied to GSQ residuals.
+- [LLM.int8()](https://arxiv.org/abs/2208.07339) / [SpQR](https://arxiv.org/abs/2306.03078) — mixed precision for outliers; our DV-SSQ salient tier follows the same approach.
 
 ---
 
