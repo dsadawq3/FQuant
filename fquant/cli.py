@@ -24,7 +24,7 @@ def main():
     quant_parser = subparsers.add_parser("quantize", help="Quantize an LLM using DV-SSQ & KV-BSS")
     quant_parser.add_argument("--model", "-m", type=str, required=True, help="Hugging Face repo ID or local directory path")
     quant_parser.add_argument("--output", "-o", type=str, required=True, help="Directory to store quantized safetensors model")
-    quant_parser.add_argument("--group-size", "-g", type=int, default=64, help="Group size for INT4 GSQ (default: 64)")
+    quant_parser.add_argument("--group-size", "-g", type=int, default=64, help="Group size for INT4 group-wise (default: 64)")
     quant_parser.add_argument("--default-rank", "-r", type=int, default=16, help="Default SVD residual rank (default: 16)")
     quant_parser.add_argument("--k-proj-rank", type=int, default=32, help="SVD rank for key projections (default: 32)")
     quant_parser.add_argument("--device", type=str, default="cpu", help="Device to compute SVD (cpu or cuda)")

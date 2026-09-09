@@ -1,5 +1,5 @@
 """
-Example: Basic 4-bit Group-Scale Quantization (GSQ) with Hadamard Spin and SVD RCO.
+Example: Basic 4-bit group-wise quantization with Hadamard spin and SVD SRC.
 """
 import torch
 from fquant.hadamard import generate_hadamard_matrix, apply_block_hadamard
@@ -23,7 +23,7 @@ def main():
     print(f"Applying Hadamard spin to weight {tuple(weight.shape)}...")
     w_spin = apply_block_hadamard(weight, block_size=128, dim=-1)
 
-    # 3. Quantize to INT4 GSQ (group size 64)
+    # 3. Quantize to INT4 group-wise (group size 64)
     q_w, scales, w_dequant = quantize_gsq_int4(w_spin, group_size=64)
     packed_q = pack_int4_to_uint8(q_w)
     unpacked_q = unpack_uint8_to_int4(packed_q)

@@ -1,5 +1,5 @@
 """
-Residual Compensation Optimization (RCO) via Truncated Singular Value Decomposition (SVD).
+SVD Residual Compensation (SRC) via Truncated Singular Value Decomposition (SVD).
 Recovers the high-curvature eigenspace lost during 4-bit discretization.
 """
 

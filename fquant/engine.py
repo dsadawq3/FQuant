@@ -26,8 +26,8 @@ class FQuantEngine:
     Executes:
     1. Automated Model Retrieval & Architectural Triage
     2. Walsh-Hadamard Coordinate Spin Rotation
-    3. Group-Scale INT4 Quantization (GSQ)
-    4. Truncated Low-Rank Residual SVD Decomposition (RCO)
+    3. Group-wise INT4 quantization
+    4. Truncated low-rank residual SVD decomposition (SRC)
     5. Zero-Compression Shield on Scale-Sensitive Parameters
     6. Key-Projection Exponential Sensitivity Defense
     7. Diagnostic Self-Healing Anomaly Detector
@@ -173,11 +173,11 @@ class FQuantEngine:
                 else:
                     w_rot = w
 
-                # 4. INT4 GSQ
+                # 4. INT4 group-wise
                 q_w, scales, w_dequant = quantize_gsq_int4(w_rot, group_size=self.group_size)
                 packed_q = pack_int4_to_uint8(q_w)
 
-                # 5. Low-Rank Residual SVD Decomposition (RCO)
+                # 5. Low-rank residual SVD decomposition (SRC)
                 residual = w_rot.float() - w_dequant
                 factor_a, factor_b, recon_res = compute_svd_residual_compensation(residual, rank=rank)
 
@@ -251,7 +251,7 @@ class FQuantEngine:
             "metadata": {
                 "framework": "FQuant-v1.0.0",
                 "total_size": total_quant_bytes,
-                "quantization": "DV-SSQ-Hadamard-GSQ",
+                "quantization": "DV-SSQ-Hadamard-groupwise",
                 "group_size": self.group_size,
                 "default_rank": self.default_rank,
                 "k_proj_rank": self.k_proj_rank,
@@ -279,7 +279,7 @@ class FQuantEngine:
                 cfg = json.load(f)
             cfg["quantization_config"] = {
                 "framework": "FQuant",
-                "quant_method": "hadamard_gsq",
+                "quant_method": "hadamard_groupwise_int4",
                 "bits": 4,
                 "group_size": self.group_size,
                 "hadamard_spin": True,

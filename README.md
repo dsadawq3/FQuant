@@ -22,7 +22,7 @@ It addresses the severe reasoning collapse, activation outlier clipping, and lon
 
 ## 🏛️ The 7 Pillars of FQuant
 
-1. **DV-SSQ (Dense-Vectorized Subspace Salience Quantization)**: Multi-tier parameter partitioning isolating salient semantic channels (INT8), background MLP weights (INT4 GSQ), and eigenspace residuals (BF16 SVD).
+1. **DV-SSQ (Dense-Vectorized Subspace Salience Quantization)**: Multi-tier parameter partitioning isolating salient semantic channels (INT8), background MLP weights (INT4 group-wise), and eigenspace residuals (BF16 SVD).
 2. **KV-BSS (Key-Value Binding Softmax Sharpening)**: Focus temperature scaling (τ_focus = 1.10) and Attention Haze floor suppression (< max - 12.0) preventing structured key-value hallucinations (`["key"] => "value"`) on contexts up to 128K tokens.
 3. **Zero-Compression Shield**: 100% pure BF16 isolation for all RMSNorms, biases, and token embeddings, eliminating cumulative phase drift across deep transformers.
 4. **Key-Projection Exponential Sensitivity Defense**: Doubled SVD rank (`r = 32`) on `k_proj` to neutralize exponential noise amplification in exp(Q · Kᵀ / √d).
@@ -103,10 +103,10 @@ kv_hook = KVBSSAttentionHook(tau_focus=1.10, haze_floor_margin=12.0)
 
 FQuant builds on established quantization literature; our contribution is the composition into an edge-focused pipeline plus per-model artifacts and edge measurements.
 
-- [QuaRot](https://arxiv.org/abs/2404.00456) — Hadamard rotation for quantization; we use the same principle with fixed H128/H256 Walsh-Hadamard blocks + GSQ, without claiming the rotation itself.
+- [QuaRot](https://arxiv.org/abs/2404.00456) — Hadamard rotation for quantization; we use the same principle with fixed H128/H256 Walsh-Hadamard blocks + group-wise INT4, without claiming the rotation itself.
 - [SpinQuant](https://arxiv.org/abs/2405.16406) — learned rotations; we use fixed Walsh-Hadamard blocks with no training, trading adaptivity for edge simplicity.
-- [GPTQ](https://arxiv.org/abs/2210.17323) / [AWQ](https://arxiv.org/abs/2306.00978) — group quantization and salient channels; our GSQ (g=64) and INT8 tier follow in the spirit of that work.
-- [ZeroQuant-V2](https://arxiv.org/abs/2307.09782) / [LoRC](https://arxiv.org/abs/2312.09934) — low-rank compensation of quantization error; our RCO is the same class of idea applied to GSQ residuals.
+- [GPTQ](https://arxiv.org/abs/2210.17323) / [AWQ](https://arxiv.org/abs/2306.00978) — group quantization and salient channels; our group-wise INT4 (g=64) and INT8 tier follow in the spirit of that work.
+- [ZeroQuant-V2](https://arxiv.org/abs/2307.09782) / [LoRC](https://arxiv.org/abs/2312.09934) — low-rank compensation of quantization error; our SRC is the same class of idea applied to group-wise INT4 residuals.
 - [LLM.int8()](https://arxiv.org/abs/2208.07339) / [SpQR](https://arxiv.org/abs/2306.03078) — mixed precision for outliers; our DV-SSQ salient tier follows the same approach.
 
 ---

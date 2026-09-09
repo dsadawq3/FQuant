@@ -1,5 +1,5 @@
 """
-Group-Scale INT4 Quantization and Bit-Packing Utilities.
+Group-wise INT4 quantization and bit-packing utilities.
 """
 
 import torch

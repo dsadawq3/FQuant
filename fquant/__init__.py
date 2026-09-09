@@ -1,6 +1,6 @@
 """
 FQuant: High-Precision Post-Training LLM Quantization Framework by F-Labs.
-Integrating DV-SSQ, KV-BSS, Walsh-Hadamard Spin, and Low-Rank Residual SVD (RCO).
+Integrating DV-SSQ, KV-BSS, Walsh-Hadamard Spin, and Low-rank residual SVD (SRC).
 """
 
 __version__ = "1.0.0"
