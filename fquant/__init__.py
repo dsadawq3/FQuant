@@ -10,6 +10,18 @@ from .kv_bss import KVBSSAttentionHook, apply_kv_bss_attention
 from .shield import ZeroCompressionShield
 from .bifurcation import SpectralEntropyBifurcationDetector
 from .engine import FQuantEngine
+from .adaptive import (
+    DEFAULT_RANK_BY_LEVEL,
+    DEFAULT_SCALE_FACTORS,
+    detect_bifurcation_levels,
+    rademacher_signs,
+    residual_spectral_spike,
+    rotate_input_activation,
+    rotate_input_weight,
+    weighted_groupwise_int4,
+    weighted_groupwise_int8,
+    weighted_randomized_svd,
+)
 
 __all__ = [
     "generate_hadamard_matrix",
@@ -23,4 +35,14 @@ __all__ = [
     "ZeroCompressionShield",
     "SpectralEntropyBifurcationDetector",
     "FQuantEngine",
+    "DEFAULT_RANK_BY_LEVEL",
+    "DEFAULT_SCALE_FACTORS",
+    "detect_bifurcation_levels",
+    "rademacher_signs",
+    "residual_spectral_spike",
+    "rotate_input_activation",
+    "rotate_input_weight",
+    "weighted_groupwise_int4",
+    "weighted_groupwise_int8",
+    "weighted_randomized_svd",
 ]
