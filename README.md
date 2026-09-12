@@ -11,6 +11,43 @@ It addresses the severe reasoning collapse, activation outlier clipping, and lon
 
 ---
 
+## 🚀 Major FQuant Update — 2026-09-12
+
+FQuant has moved beyond a small tensor quantization utility into a reproducible,
+model-aware research and deployment pipeline. The current release adds a
+calibration-aware adaptive path, architecture-specific loading, numerical
+guardrails, and release artifacts that can be inspected and reproduced.
+
+### What shipped
+
+- **Calibration-aware mixed precision:** deterministic Rademacher/Hadamard
+  transforms, activation-weighted scale selection, weighted randomized SVD, and
+  sensitivity-guided allocation between BF16, INT8, and INT4 paths.
+- **Architecture-aware inference:** the MiniCPM5-2B path reconstructs the
+  custom FQuant tensor representation directly, including paired rotations,
+  low-rank residuals, grouped quantization, KV-BSS, and cache-aware generation.
+- **Numerical hardening:** GQA and attention-mask validation, finite handling of
+  fully masked rows, deterministic scratch initialization, and cached versus
+  uncached logit parity checks.
+- **Reproducible release evidence:** calibration moments, bifurcation reports,
+  exact tensor indexes, shard metadata, and documented validation commands are
+  shipped with the adaptive model artifact.
+
+The current MiniCPM adaptive quality probe contains **234 BF16 high-sensitivity
+projections and 60 INT8 MLP projections** across **561 indexed tensors**. Its
+three-shard artifact is approximately **4.02 GiB** versus **4.69 GiB** for the
+raw BF16 snapshot. The larger adaptive artifact is an intentional quality-
+oriented intermediate point while lower-bit policies are being evaluated.
+
+The evidence is now executable: the FQuant core suite passes **12 tests**, and
+the MiniCPM numerical/integration suite passes **6 tests**. These checks validate
+loader behavior and numerical safety; they do not claim benchmark superiority,
+long-context recall gains, or optimized llama.cpp throughput. See the
+experimental [adaptive MiniCPM release](https://huggingface.co/F-Labs/MiniCPM5-2B-Hadamard-GSQ)
+and its [model-aware source repository](https://github.com/dsadawq3/MiniCPM5-2B-Hadamard-GSQ).
+
+---
+
 ## Notice on Model Quality, Iterative Reformation & Strategic Roadmap
 
 > **Ecosystem Distribution & Continuous Evolution Notice**:
