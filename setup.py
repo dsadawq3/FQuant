@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name="fquant",
     version="1.0.0",
-    description="FQuant: High-Precision Post-Training LLM Quantization Framework by F-Labs",
+    description="FQuant: Post-Training LLM Quantization Toolkit by F-Labs",
     author="F-Labs",
     packages=find_packages(),
     install_requires=[

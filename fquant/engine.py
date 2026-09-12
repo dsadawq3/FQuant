@@ -1,6 +1,4 @@
-"""
-FQuantEngine: Full production-grade multi-tier quantization and self-healing inspection engine.
-"""
+"""FQuantEngine: generic multi-tier quantization and structural inspection engine."""
 
 import os
 import gc
@@ -10,6 +8,7 @@ import shutil
 import logging
 import torch
 from safetensors.torch import load_file, save_file
+from safetensors import safe_open
 from huggingface_hub import snapshot_download
 
 from .hadamard import apply_block_hadamard
@@ -22,7 +21,7 @@ logger = logging.getLogger("FQuantEngine")
 
 class FQuantEngine:
     """
-    FQuant Universal Quantization Engine.
+    Generic FQuant tensor transformation engine.
     Executes:
     1. Automated Model Retrieval & Architectural Triage
     2. Walsh-Hadamard Coordinate Spin Rotation
@@ -105,6 +104,11 @@ class FQuantEngine:
         model_dir = audit["model_dir"]
         num_layers = audit["num_layers"]
 
+        if os.path.abspath(model_dir) == os.path.abspath(output_dir):
+            raise ValueError(
+                "model_source and output_dir must be different to protect source weights"
+            )
+
         os.makedirs(output_dir, exist_ok=True)
         logger.info(f"Starting FQuant quantization pipeline -> {output_dir}")
 
@@ -144,6 +148,18 @@ class FQuantEngine:
                     logger.warning(
                         "DV-SSQ salient-INT8 tier not implemented in FQuantEngine; "
                         f"keeping attention tensor '{name}' in BF16 (pass-through)."
+                    )
+                    quant_tensors[name] = param.to(torch.bfloat16).contiguous()
+                    total_quant_bytes += quant_tensors[name].numel() * 2
+                    continue
+
+                # The generic representation below is defined for 2D matrices
+                # whose input dimension is group-divisible. Keep other tensors
+                # preserved as BF16 instead of failing inside a shape assertion.
+                if param.ndim != 2 or param.shape[1] % self.group_size != 0:
+                    logger.warning(
+                        "Unsupported tensor shape for generic INT4 path; "
+                        f"keeping '{name}' in BF16 (shape={tuple(param.shape)})."
                     )
                     quant_tensors[name] = param.to(torch.bfloat16).contiguous()
                     total_quant_bytes += quant_tensors[name].numel() * 2
@@ -264,9 +280,12 @@ class FQuantEngine:
         with open(os.path.join(output_dir, "model.safetensors.index.json"), "w", encoding="utf-8") as f:
             json.dump(index_data, f, indent=2)
 
-        # Copy configs & tokenizer
+        # Copy configs, tokenizer files, and release documentation/license.
         for fn in os.listdir(model_dir):
-            if fn.endswith((".json", ".jinja", ".model", ".txt", ".py")) and not fn.startswith("model.safetensors.index"):
+            if (
+                fn.endswith((".json", ".jinja", ".model", ".txt", ".py"))
+                or fn in {"README.md", "LICENSE", "LICENSE.md"}
+            ) and not fn.startswith("model.safetensors.index"):
                 src = os.path.join(model_dir, fn)
                 dst = os.path.join(output_dir, fn)
                 if os.path.isfile(src):
@@ -277,7 +296,7 @@ class FQuantEngine:
         if os.path.exists(cfg_path):
             with open(cfg_path, "r", encoding="utf-8") as f:
                 cfg = json.load(f)
-            cfg["quantization_config"] = {
+            cfg["fquant_quantization_config"] = {
                 "framework": "FQuant",
                 "quant_method": "hadamard_groupwise_int4",
                 "bits": 4,
@@ -309,15 +328,58 @@ class FQuantEngine:
             logger.warning("https://github.com/dsadawq3/FQuant/issues")
             logger.warning("=" * 70)
         else:
-            logger.info("ALL TENSORS VERIFIED: Perfect numerical stability and zero reconstruction anomalies.")
+            logger.info("No tensors exceeded the configured reconstruction error threshold.")
         logger.info("=" * 70)
 
     def verify_model(self, model_dir: str):
-        """Validates safetensors index and checks tensor decodability."""
+        """Validate index-to-shard coverage without loading full tensors into RAM."""
         idx_path = os.path.join(model_dir, "model.safetensors.index.json")
         if not os.path.exists(idx_path):
             raise FileNotFoundError(f"{idx_path} not found")
         with open(idx_path, "r", encoding="utf-8") as f:
             idx = json.load(f)
         weight_map = idx.get("weight_map", {})
-        logger.info(f"Verified index: {len(weight_map)} tensors mapped across {len(set(weight_map.values()))} shards.")
+        if not isinstance(weight_map, dict) or not weight_map:
+            raise ValueError("model.safetensors.index.json contains no weight_map entries")
+
+        expected_by_shard = {}
+        for tensor_name, shard_name in weight_map.items():
+            expected_by_shard.setdefault(shard_name, set()).add(tensor_name)
+
+        missing_shards = []
+        missing_keys = []
+        extra_keys = []
+        for shard_name, expected_keys in expected_by_shard.items():
+            shard_path = os.path.join(model_dir, shard_name)
+            if not os.path.isfile(shard_path):
+                missing_shards.append(shard_name)
+                continue
+            # safe_open parses the safetensors header and exposes all keys
+            # without materializing multi-GB weight data.
+            with safe_open(shard_path, framework="pt", device="cpu") as shard:
+                actual_keys = set(shard.keys())
+            missing_keys.extend(sorted(expected_keys - actual_keys))
+            extra_keys.extend(sorted(actual_keys - expected_keys))
+
+        if missing_shards or missing_keys or extra_keys:
+            problems = []
+            if missing_shards:
+                problems.append(f"missing shards: {missing_shards}")
+            if missing_keys:
+                problems.append(f"missing mapped tensors: {missing_keys[:5]}")
+            if extra_keys:
+                problems.append(f"unmapped tensors: {extra_keys[:5]}")
+            raise ValueError("Safetensors index validation failed: " + "; ".join(problems))
+
+        summary = {
+            "model_dir": os.path.abspath(model_dir),
+            "tensor_count": len(weight_map),
+            "shard_count": len(expected_by_shard),
+            "shards": sorted(expected_by_shard),
+        }
+        logger.info(
+            "Verified safetensors index: %d tensors mapped across %d shards.",
+            summary["tensor_count"],
+            summary["shard_count"],
+        )
+        return summary

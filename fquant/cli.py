@@ -1,6 +1,4 @@
-"""
-FQuant CLI: Production Command-Line Interface for LLM Quantization.
-"""
+"""FQuant command-line interface for model inspection and quantization."""
 
 import os
 import sys

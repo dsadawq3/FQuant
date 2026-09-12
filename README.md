@@ -1,11 +1,11 @@
-# ⚡ FQuant: High-Precision Post-Training LLM Quantization Framework
+# FQuant: Post-Training LLM Quantization Toolkit
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](LICENSE)
 [![GitHub](https://img.shields.io/badge/GitHub-dsadawq3%2FFQuant-black?logo=github)](https://github.com/dsadawq3/FQuant)
 [![Organization](https://img.shields.io/badge/%F0%9F%A4%97%20Organization-F--Labs-yellow.svg)](https://huggingface.co/F-Labs)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-red.svg)](https://pytorch.org)
 
-**FQuant** is an open-source post-training LLM quantization and attention-sharpening framework engineered at **[F-Labs](https://huggingface.co/F-Labs)**. 
+**FQuant** is an open-source post-training LLM quantization toolkit engineered at **[F-Labs](https://huggingface.co/F-Labs)**.
 
 It addresses the severe reasoning collapse, activation outlier clipping, and long-context hallucinations of naive INT4/INT8 quantization through a cohesive 7-part engineering pipeline combining known quantization techniques.
 
@@ -42,16 +42,19 @@ pip install -e .
 
 ---
 
-## 🚀 CLI Usage (Production-Ready Pipeline)
+## CLI Usage
 
-FQuant includes an autonomous command-line utility with self-healing inspection:
+FQuant includes a command-line utility for inspection, tensor transformation, and
+index validation. The generic engine currently writes its own tensor representation;
+loading the result requires a model-specific loader such as the MiniCPM or Spark
+implementations in this workspace.
 
 ### 1. Automatic Inspection of Target Model
 ```bash
 fquant inspect --model openbmb/MiniCPM5-2B
 ```
 
-### 2. Autonomous Multi-Tier Quantization
+### 2. Multi-Tier Quantization
 ```bash
 fquant quantize \
     --model openbmb/MiniCPM5-2B \
@@ -66,8 +69,8 @@ fquant quantize \
 fquant verify --model ./quantized_model
 ```
 
-> **Built-in Diagnostic Guardrail**:
-> If an unexpected structural anomaly or excessive numerical deviation occurs during SVD decomposition, FQuant automatically protects the state, outputs layer-level diagnostics, and prompts the user to file a telemetry issue at:
+> **Diagnostic guardrail**:
+> If an unexpected structural anomaly or excessive numerical deviation occurs during SVD decomposition, FQuant preserves the output and records layer-level diagnostics. Review the log before using the result:
 > `https://github.com/dsadawq3/FQuant/issues`
 
 ---
@@ -81,7 +84,8 @@ from fquant import FQuantEngine, KVBSSAttentionHook
 # Initialize Engine with SVD rank and group configuration
 engine = FQuantEngine(group_size=64, default_rank=16, k_proj_rank=32)
 
-# Full model quantization from Hugging Face or local path
+# Generic tensor transformation from a Hugging Face or local path.
+# The output is not automatically loadable by every Transformers architecture.
 engine.quantize_model(
     model_source="openbmb/MiniCPM5-2B",
     output_dir="./MiniCPM5-2B-Hadamard-GSQ"

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "fquant"
 version = "1.0.0"
-description = "High-Precision Post-Training LLM Quantization Framework"
+description = "Post-Training LLM Quantization Toolkit"
 readme = "README.md"
 authors = [{ name = "F-Labs Team", email = "contact@flabs.ai" }]
 license = { text = "Apache-2.0" }
